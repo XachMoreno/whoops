@@ -24,6 +24,12 @@ class PrettyPageHandler extends Handler
     private $extraTables = array();
 
     /**
+     * Has this handler run before?
+     * @var bool
+     */
+    private $hasExecutedBefore = false;
+
+    /**
      * @var string
      */
     private $pageTitle = 'Whoops! There was an error.';
@@ -69,6 +75,11 @@ class PrettyPageHandler extends Handler
      */
     public function handle()
     {
+        // Check if this is a good idea, eventually:
+        if($this->hasExecutedBefore) {
+            return Handler::DONE;
+        }
+
         // Check conditions for outputting HTML:
         // @todo: make this more robust
         if(php_sapi_name() === 'cli' && !isset($_ENV['whoops-test'])) {
@@ -129,6 +140,7 @@ class PrettyPageHandler extends Handler
 
         $templateEngine->executeTemplate("views/error.html.php", $v);
 
+        $this->hasExecutedBefore = true;
         return Handler::QUIT;
     }
 

@@ -76,8 +76,10 @@ class VariableDumper
         // Go through each variable provided to the method, and for each
         // of the variables go through all available dumpers, to figure
         // out a method to dump said variable:
+        $totalDumpers = count($this->dumpers) - 1;
         foreach($vars as $variable) {
-            foreach($this->dumpers as $dumper) {
+            for($i = $totalDumpers; $i >= 0; $i--) {
+                $dumper = $this->dumpers[$i];
                 if($this->testIfDumperMatches($dumper, $variable)) {
                     $this->getTemplateEngine()
                         ->executeTemplate($dumper["template"], array(
