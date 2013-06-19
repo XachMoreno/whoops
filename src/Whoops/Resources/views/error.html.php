@@ -17,9 +17,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Whoops!</h1>
-
-      <?php echo $tpl->dump($tpl) ?>
+      
     </div>
   </body>
 </html>
