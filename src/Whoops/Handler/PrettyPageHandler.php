@@ -126,7 +126,7 @@ class PrettyPageHandler extends Handler
         // Add extra entries list of data tables:
         $v["tables"] = array_merge($extraTables, $v["tables"]);
 
-        $templateEngine->executeTemplate("views/layout.html.php", $v);
+        $templateEngine->executeTemplate("views/error.html.php", $v);
 
         return Handler::QUIT;
     }

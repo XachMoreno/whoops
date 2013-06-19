@@ -73,6 +73,17 @@ class TemplateEngine
     }
 
     /**
+     * Semantic alias to TemplateEngine::executeTemplate
+     * 
+     * @param string $resource
+     * @param array  $variables
+     */
+    public function template($resource, array $variables = null)
+    {
+        $this->executeTemplate($resource, $variables);
+    }
+
+    /**
      * Escape string content, but preserve URIs and convert
      * them to clickable anchor elements.
      * 
@@ -110,7 +121,7 @@ class TemplateEngine
             if($__variables !== null) {
                 extract($__variables);
             }
-            
+
             require $__template;
         });
     }
