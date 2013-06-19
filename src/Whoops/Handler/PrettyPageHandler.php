@@ -6,6 +6,7 @@
 
 namespace Whoops\Handler;
 use Whoops\Handler\Handler;
+use Whoops\Util\TemplateEngine;
 use InvalidArgumentException;
 
 class PrettyPageHandler extends Handler
@@ -72,24 +73,28 @@ class PrettyPageHandler extends Handler
             return Handler::DONE;
         }
 
+        // Get a Template Engine instance to manage rendering
+        // the error display's components:
+        $templateEngine = new TemplateEngine;
+
         // Get the 'pretty-template.php' template file
-        // @todo: this can be made more dynamic &&|| cleaned-up
+        // @todo: Integrate with TemplateEngine
         if(!($resources = $this->getResourcesPath())) {
             $resources = __DIR__ . '/../Resources';
+
+            $templateEngine->addSearchPath($resources);
         }
 
-        $templateFile = "$resources/pretty-template.php";
-
-        // @todo: Make this more reliable,
-        // possibly by adding methods to append CSS & JS to the page
-        $cssFile = "$resources/pretty-page.css";
+        $stylesheets = array(
+            file_get_contents($templateEngine->getResource("css/whoops.base.css"))
+        );
 
         // Prepare the $v global variable that will pass relevant
         // information to the template
         $inspector = $this->getInspector();
         $frames    = $inspector->getFrames();
 
-        $v = (object) array(
+        $v = array(
             'title'        => $this->getPageTitle(),
             'name'         => explode('\\', $inspector->getExceptionName()),
             'message'      => $inspector->getException()->getMessage(),
@@ -97,7 +102,7 @@ class PrettyPageHandler extends Handler
             'hasFrames'    => !!count($frames),
             'handler'      => $this,
             'handlers'     => $this->getRun()->getHandlers(),
-            'pageStyle'    => file_get_contents($cssFile),
+            'stylesheets'  => $stylesheets,
 
             'tables'      => array(
                 'Server/Request Data'   => $_SERVER,
@@ -115,34 +120,9 @@ class PrettyPageHandler extends Handler
         }, $this->getDataTables());
 
         // Add extra entries list of data tables:
-        $v->tables = array_merge($extraTables, $v->tables);
+        $v["tables"] = array_merge($extraTables, $v["tables"]);
 
-        call_user_func(function() use($templateFile, $v) {
-            // $e -> cleanup output, optionally preserving URIs as anchors:
-            $e = function($_, $allowLinks = false) {
-                $escaped = htmlspecialchars($_, ENT_QUOTES, 'UTF-8');
-
-                // convert URIs to clickable anchor elements:
-                if($allowLinks) {
-                    $escaped = preg_replace(
-                        '@([A-z]+?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@',
-                        "<a href=\"$1\" target=\"_blank\">$1</a>", $escaped
-                    );
-                }
-
-                return $escaped;
-            };
-
-            // $slug -> sluggify string (i.e: Hello world! -> hello-world)
-            $slug = function($_) {
-                $_ = str_replace(" ", "-", $_);
-                $_ = preg_replace('/[^\w\d\-\_]/i', '', $_);
-                return strtolower($_);
-            };
-
-            require $templateFile;
-        });
-
+        $templateEngine->executeTemplate("views/layout.html.php", $v);
 
         return Handler::QUIT;
     }
