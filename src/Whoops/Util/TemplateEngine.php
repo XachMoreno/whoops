@@ -104,13 +104,13 @@ class TemplateEngine
         // Run the template within a private scope:
         call_user_func(function() use($__template, $__context, $__variables) {
             // Expose the engine as an utility $tpl variable:
-            $tpl = $__template;
+            $tpl = $__context;
 
             // Extract variables into the template's scope:
             if($__variables !== null) {
                 extract($__variables);
             }
-
+            
             require $__template;
         });
     }
