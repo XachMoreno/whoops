@@ -12,9 +12,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 
-    <?php foreach($stylesheets as $stylesheet): ?>
-      <style type="text/css"><?php echo $stylesheet ?></style>
-    <?php endforeach ?>
+    <?php /* All stylesheets are compiled into a single block: */?>
+    <style type="text/css"><?php echo $stylesheet ?></style>
   </head>
   <body>
     <div class="container">

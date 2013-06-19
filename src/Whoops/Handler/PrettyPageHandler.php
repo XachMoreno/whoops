@@ -7,6 +7,7 @@
 namespace Whoops\Handler;
 use Whoops\Handler\Handler;
 use Whoops\Util\TemplateEngine;
+use Whoops\Util\ShallowAssetCompiler;
 use InvalidArgumentException;
 
 class PrettyPageHandler extends Handler
@@ -76,6 +77,7 @@ class PrettyPageHandler extends Handler
         // Get a Template Engine instance to manage rendering
         // the error display's components:
         $templateEngine = new TemplateEngine;
+        $assetCompiler  = new ShallowAssetCompiler;
 
         // Get the 'pretty-template.php' template file
         // @todo: Integrate with TemplateEngine
@@ -85,8 +87,10 @@ class PrettyPageHandler extends Handler
             $templateEngine->addSearchPath($resources);
         }
 
-        $stylesheets = array(
-            file_get_contents($templateEngine->getResource("css/whoops.base.css"))
+        $stylesheet = $assetCompiler->compileCssResources(
+            array(
+                $templateEngine->getResource("css/whoops.base.css")
+            )
         );
 
         // Prepare the $v global variable that will pass relevant
@@ -102,7 +106,7 @@ class PrettyPageHandler extends Handler
             'hasFrames'    => !!count($frames),
             'handler'      => $this,
             'handlers'     => $this->getRun()->getHandlers(),
-            'stylesheets'  => $stylesheets,
+            'stylesheet'  => $stylesheet,
 
             'tables'      => array(
                 'Server/Request Data'   => $_SERVER,
