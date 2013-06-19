@@ -101,7 +101,7 @@ class PrettyPageHandler extends Handler
 
         $v = array(
             'title'        => $this->getPageTitle(),
-            'name'         => explode('\\', $inspector->getExceptionName()),
+            'name'         => $inspector->getExceptionName(),
             'message'      => $inspector->getException()->getMessage(),
             'frames'       => $frames,
             'hasFrames'    => !!count($frames),

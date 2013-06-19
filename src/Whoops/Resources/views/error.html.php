@@ -17,7 +17,11 @@
   </head>
   <body>
     <div class="container">
-      
+      <div class="frames-container"></div>
+      <div class="detail-container">
+
+        <h2><code>(<?php echo $name ?>)</code> <?php echo $tpl->escape($message) ?></h2>
+      </div>
     </div>
   </body>
 </html>
