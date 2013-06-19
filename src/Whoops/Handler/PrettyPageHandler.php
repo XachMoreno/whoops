@@ -77,7 +77,6 @@ class PrettyPageHandler extends Handler
         // Get a Template Engine instance to manage rendering
         // the error display's components:
         $templateEngine = new TemplateEngine;
-        $assetCompiler  = new ShallowAssetCompiler;
 
         // Get the 'pretty-template.php' template file
         // @todo: Integrate with TemplateEngine
@@ -87,7 +86,7 @@ class PrettyPageHandler extends Handler
             $templateEngine->addSearchPath($resources);
         }
 
-        $stylesheet = $assetCompiler->compileCssResources(
+        $stylesheet = $templateEngine->getAssetCompiler()->compileCssResources(
             array(
                 $templateEngine->getResource("css/whoops.base.css")
             )

@@ -5,6 +5,8 @@
  */
 
 namespace Whoops\Util;
+use Whoops\Util\VariableDumper;
+use Whoops\Util\ShallowAssetCompiler;
 use RuntimeException;
 
 /**
@@ -31,6 +33,37 @@ class TemplateEngine
      * @var array[]
      */
     private $resourceCache;
+
+    /**
+     * @var Whoops\Util\VariableDumper
+     */
+    private $variableDumper;
+
+    /**
+     * @var Whoops\Util\ShallowAssetCompiler
+     */
+    private $assetCompiler;
+
+    /**
+     * @todo  Use interfaces for typing, allow extensions
+     * 
+     * @param Whoops\Util\VariableDumper $dumper
+     */
+    public function __construct(ShallowAssetCompiler $compiler = null, VariableDumper $dumper = null)
+    {
+        $this->assetCompiler  = $compiler ?: new ShallowAssetCompiler;
+        $this->variableDumper = $dumper ?: new VariableDumper($this);
+    }
+
+    /**
+     * Dumps a variable, or variables, using Whoops\Util\VariableDumper
+     * 
+     * @param mixed $var,...
+     */
+    public function dump()
+    {
+        call_user_func_array(array($this->variableDumper, "dump"), func_get_args());
+    }
 
     /**
      * Return the first argument if it's not empty, return
@@ -124,6 +157,22 @@ class TemplateEngine
 
             require $__template;
         });
+    }
+
+    /**
+     * @return Whoops\Util\VariableDumper
+     */
+    public function getVariableDumper()
+    {
+        return $this->variableDumper;
+    }
+
+    /**
+     * @return Whoops\Util\ShallowAssetCompiler
+     */
+    public function getAssetCompiler()
+    {
+        return $this->assetCompiler;
     }
 
     /**
