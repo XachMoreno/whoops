@@ -146,4 +146,20 @@ class VariableDumper
             "test"     => $test
         );
     }
+
+    /**
+     * Adds an array of dumpers to the list of known dumpers.
+     * 
+     * @param array[] $dumpers
+     */
+    public function addDumpers(array $dumpers)
+    {
+        $self = $this;
+
+        // I'm sure there's a better way to do this, but it's late, so I'm
+        // putting this one under "fix it later"
+        $newDumpers = array_map(function($dumper) use($self) {
+           $self->addDumper($dumper[0], $dumper[1], $dumper[2], $dumper[3]);
+        }, $dumpers);
+    }
 }

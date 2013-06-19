@@ -8,6 +8,7 @@ namespace Whoops\Handler;
 use Whoops\Handler\Handler;
 use Whoops\Util\TemplateEngine;
 use Whoops\Util\ShallowAssetCompiler;
+use Whoops\Util\VariableDumper;
 use InvalidArgumentException;
 
 class PrettyPageHandler extends Handler
@@ -77,6 +78,7 @@ class PrettyPageHandler extends Handler
         // Get a Template Engine instance to manage rendering
         // the error display's components:
         $templateEngine = new TemplateEngine;
+        $this->setupDefaultVariableDumpers($templateEngine->getVariableDumper());
 
         // Get the 'pretty-template.php' template file
         // @todo: Integrate with TemplateEngine
@@ -128,6 +130,46 @@ class PrettyPageHandler extends Handler
         $templateEngine->executeTemplate("views/error.html.php", $v);
 
         return Handler::QUIT;
+    }
+
+    /**
+     * Registers the default variable dumpers available to whoops, which
+     * cover a basic scenario for all possible types. Extensions can
+     * add more granular dumpers, which will have precedence.
+     * 
+     * @param Whoops\Util\VariableDumper
+     */
+    private function setupDefaultVariableDumpers(VariableDumper $variableDumper)
+    {
+        $dumpers = array(
+            // Match all variables:
+            array(
+                "whoops.generic", "views/dumper/generic.html.php",
+                VariableDumper::MATCH_ALL, null
+            ),
+
+            // Match arrays:
+            array(
+                "whoops.array", "views/dumper/array.html.php",
+                VariableDumper::MATCH_EQUAL, "array"
+            ),
+
+            // Match objects:
+            array(
+                "whoops.object", "views/dumper/object.html.php",
+                VariableDumper::MATCH_EQUAL, "object"
+            ),
+
+            // Match whoops handlers:
+            array(
+                "whoops.handler", "views/dumper/whoops_handler.html.php",
+                VariableDumper::MATCH_CLOSURE, function($variable) {
+                    return is_subclass_of($variable, "Whoops\\Handler\\HandlerInterface");
+                }
+            )
+        );
+
+        $variableDumper->addDumpers($dumpers);
     }
 
     /**
