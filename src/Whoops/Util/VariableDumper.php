@@ -52,7 +52,7 @@ class VariableDumper
     /**
      * @return Whoops\Util\TemplateEngine
      */
-    public function getTemplateEngine()
+    protected function getTemplateEngine()
     {
         return $this->templateEngine;
     }

@@ -6,9 +6,7 @@
 
 namespace Whoops\Handler;
 use Whoops\Handler\Handler;
-use Whoops\Util\TemplateEngine;
-use Whoops\Util\ShallowAssetCompiler;
-use Whoops\Util\VariableDumper;
+use Whoops\PrettyPageHandler\ErrorPageDisplay;
 use InvalidArgumentException;
 
 class PrettyPageHandler extends Handler
@@ -27,6 +25,11 @@ class PrettyPageHandler extends Handler
      * @var string
      */
     private $pageTitle = 'Whoops! There was an error.';
+
+    /**
+     * @var Whoops\Handler\PrettyPageHandler\ErrorPageDisplay
+     */
+    private $errorPage;
 
     /**
      * A string identifier for a known IDE/text editor, or a closure
@@ -65,6 +68,20 @@ class PrettyPageHandler extends Handler
     }
 
     /**
+     * Lazily instantiates an ErrorPageDisplay instance, and returns it.
+     * 
+     * @return Whoops\Handler\PrettyPageHandler\ErrorPageDisplay
+     */
+    protected function getErrorPage()
+    {
+        if($this->errorPage === null) {
+            $this->errorPage = new ErrorPageDisplay;
+        }
+
+        return $this->errorPage;
+    }
+
+    /**
      * @return int|null
      */
     public function handle()
@@ -74,6 +91,8 @@ class PrettyPageHandler extends Handler
         if(php_sapi_name() === 'cli' && !isset($_ENV['whoops-test'])) {
             return Handler::DONE;
         }
+
+        return Handler::DONE;
 
         // Get a Template Engine instance to manage rendering
         // the error display's components:
