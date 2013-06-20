@@ -6,7 +6,7 @@
 
 namespace Whoops\Handler;
 use Whoops\Handler\Handler;
-use Whoops\PrettyPageHandler\ErrorPageDisplay;
+use Whoops\Handler\PrettyPageHandler\ErrorPage;
 use InvalidArgumentException;
 
 class PrettyPageHandler extends Handler
@@ -70,12 +70,12 @@ class PrettyPageHandler extends Handler
     /**
      * Lazily instantiates an ErrorPageDisplay instance, and returns it.
      * 
-     * @return Whoops\Handler\PrettyPageHandler\ErrorPageDisplay
+     * @return Whoops\Handler\PrettyPageHandler\ErrorPage
      */
     protected function getErrorPage()
     {
         if($this->errorPage === null) {
-            $this->errorPage = new ErrorPageDisplay;
+            $this->errorPage = new ErrorPage($this);
         }
 
         return $this->errorPage;
@@ -92,19 +92,13 @@ class PrettyPageHandler extends Handler
             return Handler::DONE;
         }
 
-        return Handler::DONE;
-
-        // Get a Template Engine instance to manage rendering
-        // the error display's components:
-        $templateEngine = new TemplateEngine;
-        $this->setupDefaultVariableDumpers($templateEngine->getVariableDumper());
+        $errorPage      = $this->getErrorPage();
+        $templateEngine = $errorPage->getTemplateEngine();
 
         // Get the 'pretty-template.php' template file
-        // @todo: Integrate with TemplateEngine
+        // @todo Cleanup, integrate more cleanly with ErrorPage
         if(!($resources = $this->getResourcesPath())) {
-            $resources = __DIR__ . '/../Resources';
-
-            $templateEngine->addSearchPath($resources);
+            $templateEngine->addSearchPath(__DIR__ . "/../Resources");
         }
 
         $stylesheet = $templateEngine->getAssetCompiler()->compileCssResources(

@@ -16,7 +16,7 @@ use RuntimeException;
  * Display interface/container for the PrettyPageHandler's
  * template logic.
  */
-class ErrorPageDisplay
+class ErrorPage
 {
     /**
      * @var Whoops\Run
@@ -59,21 +59,22 @@ class ErrorPageDisplay
         // Same as the stylesheets:
         "template.javascripts" => array(),
 
-        "page.title"           => "Whoops! There was an error!"
+        "page.title"   => "Whoops! There was an error!"
     );
 
     /**
-     * @param Whoops\Run $run
      * @param Whoops\Handler\PrettyPageHandler $handler
+     * @param Whoops\Util\TemplateEngine       $templateEngine
+     * @param Whoops\Util\VariableDumper       $variableDumper
+     * @param Whoops\Util\ShallowAssetCompiler $assetCompiler
      */
     public function __construct
-        ( Run $run,
+        ( 
           HandlerInterface $handler,
           TemplateEngine $templateEngine = null,
           VariableDumper $variableDumper = null,
           ShallowAssetCompiler $assetCompiler = null )
     {
-        $this->whoops  = $run;
         $this->handler = $handler;
 
         // Optional:
@@ -95,7 +96,7 @@ class ErrorPageDisplay
      * 
      * @return Whoops\Util\TemplateEngine
      */
-    protected function getTemplateEngine()
+    public function getTemplateEngine()
     {
         if($this->templateEngine === null) {
             $this->templateEngine = new TemplateEngine(
